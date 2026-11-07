@@ -12,7 +12,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
-    owner = "reardencode";
+    owner = "rbitcoin-org";
     repo = "rbitcoin";
     tag = "v${finalAttrs.version}";
     hash = "sha256-xLvGL1W6DQatGvYOQzHyHLSms1iuNFWiQRRr5byfpUQ=";
@@ -41,8 +41,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   meta = {
     description = "Bitcoin full node in Rust with pure-Rust consensus and a built-in Electrum server";
-    homepage = "https://github.com/reardencode/rbitcoin";
-    changelog = "https://github.com/reardencode/rbitcoin/blob/v${finalAttrs.version}/CHANGELOG.md";
+    homepage = "https://github.com/rbitcoin-org/rbitcoin";
+    changelog = "https://github.com/rbitcoin-org/rbitcoin/blob/v${finalAttrs.version}/CHANGELOG.md";
     license = with lib.licenses; [
       mit
       asl20
