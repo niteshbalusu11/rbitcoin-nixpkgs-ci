@@ -1,0 +1,38 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.system }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { system: x86_64-linux, runner: ubuntu-latest }
+          - { system: aarch64-linux, runner: ubuntu-24.04-arm }
+          - { system: x86_64-darwin, runner: macos-15-intel }
+          - { system: aarch64-darwin, runner: macos-latest }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Build
+        run: nix-build ci.nix
+      - name: Versions
+        run: |
+          ./result/bin/rbitcoin-node --version
+          ./result/bin/rbitcoin-cli --version
+      - name: Regtest smoke
+        run: |
+          d="$(mktemp -d)"
+          ./result/bin/rbitcoin-node --network regtest --datadir "$d" \
+            --no-listen --no-seeds --no-discover --rpc --max-run-secs 20 --log-level warn &
+          for _ in $(seq 1 150); do [ -S "$d/rpc.sock" ] && break; sleep 0.2; done
+          ./result/bin/rbitcoin-cli --datadir "$d" getblockchaininfo
+          wait
